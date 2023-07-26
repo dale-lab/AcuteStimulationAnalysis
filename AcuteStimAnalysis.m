@@ -414,14 +414,52 @@ elseif stiman == 'Y' && timepoint == 3
     end
 
     %get average/breath
-    for c = 1:numel(minbymin(:, 1))
+     for c = 1:numel(minbymin(:, 1))
         minbymin(c, :) = minbymin(c, :)/minbymin(c, 1);
         minbymin(c, 1) = c;
     end
 
-    averages(1, :) = minbymin(1, 2:9);
-    averages(2, :) = mean(minbymin(2:mins-1, 2:9));
-    averages(3, :) = minbymin(mins, 2:9);
+    if stiman == 'Y'
+        stimbegin = 0;
+        for r = 1:numel(results(:, 1))
+            if results(r, 8) == 0
+                stimbegin = stimbegin+1;
+            else
+                break
+            end
+        end
+    
+        r = numel(results(:, 1));
+        while r >= 0
+            if results(r, 8) == 0
+                r = r - 1;
+            else
+                break
+            end
+        end
+    else
+        stimbegin = 0;
+        for r = 1:numel(results(:, 1))
+            if results(r, 1) <= 120
+                stimbegin = stimbegin+1;
+            else
+                break
+            end
+        end
+    
+        r = numel(results(:, 1));
+        while r >= 0
+            if results(r, 1) >= results(end, 1) - 120
+                r = r - 1;
+            else
+                break
+            end
+        end
+    end
+
+    averages(1, :) = mean(results(1:stimbegin, 3:10));
+    averages(2, :) = mean(results(stimbegin+1:r, 3:10));
+    averages(3, :) = mean(results(r+1:end, 3:10));
 
 end
 
